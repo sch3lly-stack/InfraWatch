@@ -1,4 +1,11 @@
-# Security
+# Security Policy
+
+## Reporting a vulnerability
+Please **do not open a public issue**. Report privately through GitHub:
+<https://github.com/sch3lly-stack/InfraWatch/security/advisories/new>. Include affected version/commit, reproduction steps and impact.
+Expect an acknowledgement within a few days. This is a portfolio/learning project without a formal SLA or supported-versions matrix yet (see roadmap).
+
+## Security design
 
 ## Threat model (summary)
 Agents run on semi-trusted hosts and talk to the server over the network; operators use the dashboard.
