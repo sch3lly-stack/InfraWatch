@@ -108,29 +108,28 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     fdir = Path(settings.frontend_dir)
     if fdir.is_dir():
-        root = fdir.resolve()
-        app.mount("/assets", StaticFiles(directory=root / "assets"), name="assets")
+        root = os.path.realpath(fdir)
+        app.mount("/assets", StaticFiles(directory=os.path.join(root, "assets")), name="assets")
 
-        def _safe_static_file(path: str) -> Path | None:
-            """Return a file inside the frontend root for `path`, or None.
+        def _safe_static_file(path: str) -> str | None:
+            """Return an absolute file path inside the frontend root for `path`, or None.
 
-            Validation happens before any filesystem access on user input: reject NUL bytes, backslashes, absolute
-            paths and `..` segments lexically, then resolve (follows symlinks) and require the result to stay inside
-            the root before it is ever stat'ed.
+            Validation happens before any stat on user input: reject NUL bytes, backslashes, absolute paths and `..`
+            segments lexically, then `realpath` (which follows symlinks) and require the result to stay under the
+            root (`startswith(root + os.sep)`) before the filesystem is probed.
             """
             if not path or "\x00" in path or "\\" in path or path.startswith("/") or ".." in PurePosixPath(path).parts:
                 return None
-            candidate = (root / path).resolve()
-            if not candidate.is_relative_to(root):
+            full = os.path.realpath(os.path.join(root, path))
+            if not full.startswith(root + os.sep):
                 return None
-            return candidate if candidate.is_file() else None
+            return full if os.path.isfile(full) else None
 
         @app.get("/{path:path}", include_in_schema=False)
         def spa(path: str):
             if path.startswith("api/"):
                 return JSONResponse({"detail": "not found"}, status_code=404)
-            f = _safe_static_file(path)
-            return FileResponse(f if f else root / "index.html")
+            return FileResponse(_safe_static_file(path) or os.path.join(root, "index.html"))
 
     return app
 

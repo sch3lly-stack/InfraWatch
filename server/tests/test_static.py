@@ -1,4 +1,5 @@
 """The SPA catch-all must never touch (or serve) files outside the frontend directory."""
+import os
 from pathlib import Path
 
 import pytest
@@ -52,13 +53,18 @@ def test_no_filesystem_probe_outside_root(web, monkeypatch):
     """Containment must be decided lexically/by resolved prefix BEFORE any is_file() stat on the candidate."""
     c, root, outside = web
     probed: list[Path] = []
-    real = Path.is_file
+    real_path_is_file, real_isfile = Path.is_file, os.path.isfile
 
-    def spy(self, *a, **k):
+    def spy_path(self, *a, **k):
         probed.append(self)
-        return real(self, *a, **k)
+        return real_path_is_file(self, *a, **k)
 
-    monkeypatch.setattr(Path, "is_file", spy)
+    def spy_isfile(p, *a, **k):
+        probed.append(Path(p))
+        return real_isfile(p, *a, **k)
+
+    monkeypatch.setattr(Path, "is_file", spy_path)
+    monkeypatch.setattr(os.path, "isfile", spy_isfile)
     c.get("/../secret.txt")
     c.get("/..%2fsecret.txt")
     c.get("/leak")
