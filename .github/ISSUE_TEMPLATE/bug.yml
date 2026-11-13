@@ -1,0 +1,41 @@
+name: Bug
+description: Propose or track a bug
+labels: ["type:bug"]
+body:
+  - type: textarea
+    id: objective
+    attributes: { label: Objective / problem statement, description: What should change and why? }
+    validations: { required: true }
+  - type: textarea
+    id: background
+    attributes: { label: Background and technical context, description: Relevant code, links, reproduction steps (bugs) }
+    validations: { required: true }
+  - type: textarea
+    id: scope
+    attributes: { label: Scope of work }
+    validations: { required: true }
+  - type: textarea
+    id: acceptance
+    attributes: { label: Acceptance criteria, description: "Use a checklist (- [ ])" }
+    validations: { required: true }
+  - type: textarea
+    id: dependencies
+    attributes: { label: Dependencies, description: Related issues (#N) or "None" }
+  - type: textarea
+    id: testing
+    attributes: { label: Testing requirements }
+    validations: { required: true }
+  - type: dropdown
+    id: priority
+    attributes: { label: Priority (also apply the priority:* label), options: [critical, high, medium, low] }
+    validations: { required: true }
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of Done
+      value: |
+        - [ ] Implementation and acceptance criteria complete
+        - [ ] Tests pass in CI, no regressions
+        - [ ] Lint, type check, build pass
+        - [ ] Docs/CHANGELOG updated
+        - [ ] PR reviewed and merged, issue closed
