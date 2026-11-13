@@ -17,7 +17,7 @@ Infrastructure monitoring platform: a central **FastAPI server** with a React da
 | Dashboard | Totals, online/offline/pending, systems needing attention, charts (hover crosshair + table view), time ranges (15m-30d), environment/group/status/search filters, host detail pages, historical report, CSV/JSON export |
 | Alerting | Rules for CPU / memory / low disk / host down / service down / slow response; severities; sustained-condition windows; ack / resolve / history; duplicate suppression; cooldown; maintenance windows; webhook notifications |
 | Agent | YAML config with strict validation, configurable interval, HTTPS (TLS verification can't be disabled), retries with exponential backoff + jitter, durable SQLite buffer, JSON logs, graceful shutdown, health file, `check`/`validate`/`status` commands |
-| Security | One-time enrollment tokens, per-host API keys (identity derived from key, never payload), RBAC (viewer / operator / admin), Argon2id passwords, JWT sessions, rate limiting, strict input validation, audit log, security headers. See [docs/SECURITY.md](docs/SECURITY.md) |
+| Security | One-time enrollment tokens, per-host API keys (identity derived from key, never payload), RBAC (viewer / operator / admin), Argon2id passwords, JWT sessions, rate limiting, strict input validation, audit log, security headers. See [SECURITY.md](SECURITY.md) |
 | Platform | Docker Compose with PostgreSQL/TimescaleDB, GitHub Actions CI, simulator for demo data |
 
 ## Architecture
@@ -240,7 +240,7 @@ Be aware of what is and isn't verified (details in [docs/ROADMAP.md](docs/ROADMA
 
 ## Docs
 
-[Security](docs/SECURITY.md) · [API](docs/API.md) · [Platform notes](docs/PLATFORMS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Roadmap](docs/ROADMAP.md)
+[Contributing](CONTRIBUTING.md) · [Agent rules](AGENTS.md) · [Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [API](docs/API.md) · [Platform notes](docs/PLATFORMS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Roadmap](docs/ROADMAP.md)
 
 ## License
 
