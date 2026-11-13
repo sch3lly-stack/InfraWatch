@@ -5,7 +5,7 @@ import contextlib
 import logging
 import os
 from datetime import timedelta
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -108,16 +108,28 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     fdir = Path(settings.frontend_dir)
     if fdir.is_dir():
-        app.mount("/assets", StaticFiles(directory=fdir / "assets"), name="assets")
+        root = os.path.realpath(fdir)
+        app.mount("/assets", StaticFiles(directory=os.path.join(root, "assets")), name="assets")
+
+        def _safe_static_file(path: str) -> str | None:
+            """Return an absolute file path inside the frontend root for `path`, or None.
+
+            Validation happens before any stat on user input: reject NUL bytes, backslashes, absolute paths and `..`
+            segments lexically, then `realpath` (which follows symlinks) and require the result to stay under the
+            root (`startswith(root + os.sep)`) before the filesystem is probed.
+            """
+            if not path or "\x00" in path or "\\" in path or path.startswith("/") or ".." in PurePosixPath(path).parts:
+                return None
+            full = os.path.realpath(os.path.join(root, path))
+            if not full.startswith(root + os.sep):
+                return None
+            return full if os.path.isfile(full) else None
 
         @app.get("/{path:path}", include_in_schema=False)
         def spa(path: str):
             if path.startswith("api/"):
                 return JSONResponse({"detail": "not found"}, status_code=404)
-            f = (fdir / path).resolve()
-            if path and f.is_file() and fdir.resolve() in f.parents:
-                return FileResponse(f)
-            return FileResponse(fdir / "index.html")
+            return FileResponse(_safe_static_file(path) or os.path.join(root, "index.html"))
 
     return app
 

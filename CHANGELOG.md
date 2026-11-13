@@ -16,3 +16,6 @@ Initial development. Version `0.1.0` is the working version in the code but has 
 - React dashboard (#28) and simulated-data generator (#29).
 - Docker/Compose packaging (#30), GitHub Actions CI (#31) and documentation (#32).
 - Engineering workflow: `AGENTS.md`, `CONTRIBUTING.md`, issue forms, PR template, CODEOWNERS, root `SECURITY.md` (#33).
+
+### Security
+- Static/SPA handler validates the requested path (no NUL, backslash, absolute or `..` segments, symlink escape) before any filesystem access (#47).
