@@ -1,0 +1,27 @@
+# InfraWatch agent configuration. Validate with:  infrawatch-agent -c agent.yaml validate
+server_url: https://monitor.example.com     # HTTPS required (plain http only allowed for localhost)
+interval: 15                                # seconds between collections (1-3600)
+http_timeout: 10                            # seconds, connect/read timeout talking to the server
+state_dir: /var/lib/infrawatch-agent        # holds agent.key (0600), buffer.db and health.json
+disk_path: /                                # filesystem to report (use C:\ on Windows)
+# ca_bundle: /etc/infrawatch/ca.pem         # only for a private CA / self-signed server cert
+buffer_max_samples: 20000                   # ~3.5 days at 15s; oldest dropped first when full
+batch_size: 100
+backoff_max: 300
+log_level: INFO
+
+# enrollment_token is used once, on first start. Prefer the INFRAWATCH_ENROLLMENT_TOKEN env var.
+# After registration the API key is stored in state_dir/agent.key.
+
+checks:                                     # custom service checks
+  - name: web
+    kind: http
+    target: http://localhost:8080/health
+    timeout: 5
+    expected_status: 200                    # optional; default is any status < 400
+  - name: postgres
+    kind: tcp
+    target: localhost:5432
+  - name: nginx
+    kind: process                           # process-name match only; command lines are never read
+    target: nginx

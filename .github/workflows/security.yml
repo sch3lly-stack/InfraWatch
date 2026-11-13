@@ -1,0 +1,18 @@
+name: Security
+on:
+  schedule: [{ cron: "0 6 * * 1" }]
+  pull_request:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pip-audit bandit -e server -e agent
+      - run: pip-audit
+      - run: bandit -r server/infrawatch_server agent/infrawatch_agent -q -ll
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: frontend

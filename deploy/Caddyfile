@@ -1,0 +1,8 @@
+# Internal CA for lab use. For a public hostname replace with: monitor.example.com { reverse_proxy server:8000 }
+{
+	local_certs
+}
+:443 {
+	tls internal
+	reverse_proxy server:8000
+}

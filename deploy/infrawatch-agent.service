@@ -1,0 +1,26 @@
+[Unit]
+Description=InfraWatch monitoring agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=infrawatch
+Group=infrawatch
+Environment=INFRAWATCH_ENROLLMENT_TOKEN=
+EnvironmentFile=-/etc/infrawatch/agent.env
+ExecStart=/opt/infrawatch-agent/bin/infrawatch-agent -c /etc/infrawatch/agent.yaml run
+Restart=always
+RestartSec=5
+StateDirectory=infrawatch-agent
+# hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/infrawatch-agent
+
+[Install]
+WantedBy=multi-user.target
