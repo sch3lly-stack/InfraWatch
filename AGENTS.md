@@ -8,6 +8,14 @@ Update it (through a PR) whenever the engineering procedure changes. Any other a
 The goal is not only working software but a development history that shows professional engineering discipline.
 **Every meaningful change must be traceable: Issue → branch → commits → pull request → tests/CI → merge → closed issue.**
 
+## 0. Core operating instruction (read first, every session)
+Before doing any development work, read this file and inspect the GitHub repository. **GitHub Issues are the authoritative source of project work.**
+Never begin a meaningful feature, bug fix, refactor or improvement without an associated issue. When work is complete, create/update a pull request,
+perform a complete engineering self-review, run all relevant tests and CI checks, correct what you find, and merge the PR once every repository
+requirement is satisfied. Update the issue and project tracking information. Maintain this workflow across every session and **do not rely on
+conversation history to remember project status**: derive it from GitHub. Never falsely report completed work, never bypass repository protections.
+An agent's self-review is **not** an independent human review and must never be presented as one.
+
 ## 1. Session start checklist
 1. Read this file.
 2. `git status`, `git fetch`, check the current branch (never work on `main`).
@@ -26,8 +34,9 @@ objective, background/technical context, scope, acceptance criteria, dependencie
 * **Milestones** are release phases: v0.1 (initial), v0.2 (verification & hardening), v0.3 (scale & integrations), v1.0 (production ready).
 * Retroactive issues must say they were created retroactively. Never backdate or misrepresent history. Never close an issue for incomplete work;
   partially complete work stays open, is labelled `status:partial` and lists what remains.
-* Project board: **blocked**: the CLI token lacks the `project` scope (`gh auth refresh -s project` must be run by the owner). Milestones + labels are the tracking
-  system until a board exists.
+* **Project board** (to be created, see below). Blocked: the CLI token lacks the `project` scope; the owner must run `gh auth refresh -s project`.
+  Until then milestones + labels are the tracking system. Board columns, in order: **Backlog** (approved future work) → **Ready** (requirements defined) →
+  **In Progress** (active development) → **In Review** (PR open) → **Testing** (validation/CI) → **Done** (merged and verified). Move cards as work advances.
 
 ## 3. Branching
 Never commit to `main` directly. Branch from an up-to-date `main`, keep branches short-lived and focused:
@@ -99,3 +108,15 @@ Routine implementation decisions do **not** require asking.
 ## 12. Known deviations from this process (history)
 The initial code (commit `f13e87c`) was pushed directly to `main` before this workflow existed. The issues for that work (#22 to #32) were created
 retroactively and say so.
+
+## 13. Repository settings (enforced by GitHub, applied 2026-11-13)
+`main` is protected: pull requests required, status checks required (`python-tests (3.11/3.12/3.13)`, `postgres-tests`, `frontend`, `docker`),
+linear history, conversations must be resolved, force-push and deletion disabled, **enforced for administrators too** (so the owner's credentials cannot
+silently bypass it). **No independent approval is required** because this is a single-maintainer project operated with an autonomous agent: CI and PRs are
+the gate, and self-review is documented honestly. Only squash merging is enabled; merged branches are deleted automatically. Dependabot alerts and security
+updates, secret scanning with push protection, private vulnerability reporting and CodeQL default setup are enabled. If these settings must change, that is an
+owner decision: stop and report (section 11).
+
+## 14. Consistency across repositories
+The owner maintains several repositories (e.g. ReleaseOps, VulnWatch). The same standard applies to all of them: identical labels, milestones, templates, branch
+protection, CHANGELOG/ADR discipline and this AGENTS.md structure, so the repositories read as one disciplined body of work.
