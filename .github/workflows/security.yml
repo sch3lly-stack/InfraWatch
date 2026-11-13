@@ -2,6 +2,10 @@ name: Security
 on:
   schedule: [{ cron: "0 6 * * 1" }]
   pull_request:
+# Least privilege: jobs only read the repository.
+permissions:
+  contents: read
+
 jobs:
   audit:
     runs-on: ubuntu-latest
