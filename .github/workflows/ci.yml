@@ -3,6 +3,10 @@ on:
   push: { branches: [main] }
   pull_request:
 
+# Least privilege: jobs only read the repository.
+permissions:
+  contents: read
+
 jobs:
   python-tests:
     runs-on: ubuntu-latest
