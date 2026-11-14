@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./infrawatch.db"
     secret_key: str = ""  # JWT signing key. Generated (ephemeral) if empty.
     admin_username: str = "admin"
-    admin_password: str = ""  # If empty and no admin exists, a random one is generated and logged once.
+    admin_password: str = ""  # If empty and no admin exists, a random password is written to initial_password_file.
+    # Exclusive create, mode 0600. Not written when admin_password is set, and never overwritten.
+    initial_password_file: str = "./initial-admin-password.txt"
     token_ttl_minutes: int = 480
 
     # Host liveness

@@ -9,3 +9,5 @@ frontend/playwright-report/
 *.db
 .env
 infrawatch-agent-state/
+# Generated first-run admin password (mode 0600). Read it, then delete it.
+initial-admin-password.txt

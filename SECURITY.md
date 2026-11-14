@@ -23,7 +23,7 @@ an operator can only do what their role allows.
 | RBAC | viewer: read. operator: + ack/resolve/maintenance. admin: + rules, channels, tokens, users, host management, audit log. |
 | Input validation | Pydantic models with bounds, regexes and `extra=forbid`; batch size, clock-skew (±5 min) and sample-age limits; parametrised queries via SQLAlchemy (no string SQL). |
 | Rate limiting | Per-IP for login/register/API, per-host for ingest. Returns 429 + Retry-After. |
-| Secrets | All via environment (`.env` is git-ignored); compose refuses to start without them; agent key file is 0600; secrets are never logged except the one-time generated admin password if none is configured. |
+| Secrets | All via environment (`.env` is git-ignored); compose refuses to start without them; agent key file is 0600. If no admin password is configured, the generated first-run password is written once to a 0600 file (`INFRAWATCH_INITIAL_PASSWORD_FILE`, default `./initial-admin-password.txt`) and is never logged. An existing file is not overwritten. Delete the file after reading it. |
 | Audit log | Logins (incl. failures), registrations, rule/channel/user/host/maintenance changes, ack/resolve, exports. Admin-viewable. |
 | Webhooks / SSRF | URLs must be http(s) and resolve to public addresses unless `ALLOW_PRIVATE_WEBHOOKS=true`; redirects are not followed; short timeouts. |
 | Browser | CSP, `X-Frame-Options: DENY`, `nosniff`, `no-referrer`, `Cache-Control: no-store` on API; React escapes output (no `dangerouslySetInnerHTML`). Token kept in `sessionStorage`. |
