@@ -26,18 +26,51 @@ from .security import hash_password, new_secret
 log = logging.getLogger("infrawatch")
 
 
+def _write_initial_password(path: Path, password: str) -> None:
+    """Create `path` exclusively, mode 0600, containing `password` and a trailing newline.
+
+    An existing file is left untouched. FileExistsError propagates so startup fails closed
+    instead of creating an admin whose password was not saved.
+    """
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    try:
+        fd = os.open(path, flags, 0o600)
+    except FileExistsError:
+        log.error(
+            "Initial admin password file %s already exists and was not overwritten. "
+            "Delete that file or set INFRAWATCH_ADMIN_PASSWORD.",
+            path,
+        )
+        raise
+    try:
+        os.fchmod(fd, 0o600)
+        payload = (password + "\n").encode("utf-8")
+        if os.write(fd, payload) != len(payload):
+            raise OSError(f"short write creating {path}")
+    except Exception:
+        os.close(fd)
+        with contextlib.suppress(OSError):
+            path.unlink()
+        raise
+    os.close(fd)
+
+
 def bootstrap_admin(db: Database, settings: Settings) -> None:
     with db.session() as s:
         if s.query(models.User).count():
             return
         pw = settings.admin_password
         generated = not pw
-        pw = pw or new_secret(12)
+        if generated:
+            pw = new_secret(12)
+            _write_initial_password(Path(settings.initial_password_file), pw)
         s.add(models.User(username=settings.admin_username, password_hash=hash_password(pw), role="admin"))
         s.commit()
     if generated:
-        # Printed once so the operator can log in; set INFRAWATCH_ADMIN_PASSWORD to avoid this.
-        log.warning("Created initial admin '%s' with generated password: %s", settings.admin_username, pw)
+        log.warning(
+            "Generated admin password written to %s; read it, then delete that file.",
+            settings.initial_password_file,
+        )
 
 
 def run_cycle(app: FastAPI) -> dict:

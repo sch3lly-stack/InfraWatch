@@ -13,6 +13,6 @@
 | Dashboard shows no data but agent is fine | "Show simulated data" only toggles simulated hosts; real hosts need ≥ 1 accepted sample. Check the time range. |
 | No alert notifications | Check channel `min_severity`; webhook URLs resolving to private IPs need `ALLOW_PRIVATE_WEBHOOKS=true`; look for `notification to channel … failed` in server logs. Alerts inside a maintenance window are suppressed. |
 | Alert did not re-open after I resolved it | Cooldown: the rule's `cooldown_seconds` blocks re-opening the same alert after resolution. |
-| Server logs `Created initial admin … generated password` | Set `INFRAWATCH_ADMIN_PASSWORD` before first start. |
+| Cannot find the first-run admin password | If `INFRAWATCH_ADMIN_PASSWORD` was unset, the password is the single line in `initial-admin-password.txt` (or `INFRAWATCH_INITIAL_PASSWORD_FILE`), created mode 0600. It is not logged. Read it, sign in, then delete the file. If that file already existed, startup refuses to overwrite it and does not create the admin; delete the file or set `INFRAWATCH_ADMIN_PASSWORD`. |
 | Sessions reset on restart | `INFRAWATCH_SECRET_KEY` not set (ephemeral key generated). |
 | Compose: `set POSTGRES_PASSWORD in .env` | Copy `.env.example` to `.env` and fill in values. |

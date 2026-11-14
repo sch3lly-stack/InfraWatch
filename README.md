@@ -169,6 +169,12 @@ export INFRAWATCH_ADMIN_PASSWORD='choose-a-password' INFRAWATCH_SECRET_KEY="$(py
 uvicorn --factory infrawatch_server.main:app_factory --port 8000
 ```
 
+If you omit `INFRAWATCH_ADMIN_PASSWORD`, the first start generates a password and writes it once to
+`./initial-admin-password.txt` (mode `0600`). The log names that path and says to delete the file; the password
+itself is not logged. Read the file, sign in as `admin`, then delete it. Set `INFRAWATCH_INITIAL_PASSWORD_FILE`
+to choose another path. An existing file is never overwritten: remove it or set `INFRAWATCH_ADMIN_PASSWORD`
+before starting.
+
 Demo data: `python -m infrawatch_server.simulate --hosts 8 --hours 24` creates flagged **simulated** hosts, metrics and
 alerts (`--purge` removes them). They are hidden unless "Show simulated data" is ticked, and they can never be
 authenticated as, so no agent can write into them.
@@ -196,7 +202,7 @@ Agent commands: `run`, `register`, `check`, `validate`, `status` (reads `health.
 ## Configuration reference (server)
 
 All settings are environment variables prefixed `INFRAWATCH_` (see `server/infrawatch_server/config.py`):
-`DATABASE_URL`, `SECRET_KEY`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `TOKEN_TTL_MINUTES`, `OFFLINE_AFTER_SECONDS`,
+`DATABASE_URL`, `SECRET_KEY`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `INITIAL_PASSWORD_FILE`, `TOKEN_TTL_MINUTES`, `OFFLINE_AFTER_SECONDS`,
 `EVALUATION_INTERVAL_SECONDS`, `METRIC_RETENTION_DAYS`, `RATE_LIMIT_*_PER_MIN`, `LATEST_AGENT_VERSION`,
 `ALLOW_PRIVATE_WEBHOOKS`, `TRUST_PROXY_HEADERS`, `CORS_ORIGINS`.
 
